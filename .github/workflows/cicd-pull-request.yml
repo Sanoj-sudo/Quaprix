@@ -33,7 +33,7 @@ jobs:
           ssh-private-key: ${{ secrets.EC2_KEY }}
 
       - name: Add server to known hosts
-        run: ssh-keyscan -H 3.113.9.57 >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H 43.206.123.33 >> ~/.ssh/known_hosts
 
       - name: Deploy
         if: ${{ success() }}
