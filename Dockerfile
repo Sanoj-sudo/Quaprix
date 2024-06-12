@@ -10,7 +10,7 @@ COPY package.json package-lock.json ./
 # Install dependencies
 RUN npm install
 
-# Copy rest of the application code
+# Copy rest of the application code to destination folder
 COPY . .
 
 # Build the application
