@@ -1,0 +1,41 @@
+name: PR CI/CD
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
+
+    steps:
+      - name: Checkout source code 
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USER_NAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image
+        run: docker build -t sanoj8860/reactjs-app:${{ github.sha }} .
+
+      - name: Publish Docker Image to Docker Hub
+        run: docker push sanoj8860/reactjs-app:${{ github.sha }}
+
+      - name: Add SSH key to the agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.EC2_KEY }}
+
+      - name: Add server to known hosts server
+        run: ssh-keyscan -H 43.206.123.33 >> ~/.ssh/known_hosts
+
+      - name: Deploy
+        run: |
+          echo "Deploying to development server"
+          ssh ubuntu@43.206.123.33 'docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
