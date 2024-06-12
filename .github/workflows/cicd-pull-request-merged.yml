@@ -35,7 +35,23 @@ jobs:
       - name: Add server to known hosts server
         run: ssh-keyscan -H 43.206.123.33 >> ~/.ssh/known_hosts
 
-      - name: Deploy
+      - name: Deploy to Development Server
         run: |
           echo "Deploying to development server"
           ssh ubuntu@43.206.123.33 'docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
+
+      - name: Manual Approval for Production Deployment
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: Sanoj-sudo
+          minimum-approvals: 1
+          issue-title: "Deploying to production server"
+          issue-body: "Please approve or deny the deployment to the production server."
+          exclude-workflow-initiator-as-approver: false
+
+      - name: Deploy to Production Server
+        if: success() && steps['Manual Approval for Production Deployment'].outputs.approved == 'true'
+        run: |
+          echo "Deploying to production server"
+          ssh ubuntu@18.181.187.216 'docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
