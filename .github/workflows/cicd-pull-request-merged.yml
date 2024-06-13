@@ -51,6 +51,11 @@ jobs:
           issue-body: "Please approve or deny the deployment to the production server."
           exclude-workflow-initiator-as-approver: false
 
+      - name: Debug Outputs
+        if: always()
+        run: |
+          echo "Approved: ${{ steps.approval.outputs.approved }}"
+
       - name: Deploy to Production Server
         if: ${{ steps.approval.outputs.approved == 'true' }}
         run: |
