@@ -2,6 +2,8 @@ name: PR CI/CD
 
 on:
   pull_request:
+    types: 
+      - opened
     branches:
       - dev
 
