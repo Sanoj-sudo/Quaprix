@@ -56,7 +56,7 @@ jobs:
           echo "Approved: ${{ steps.approval.outputs.approved }}"
 
       - name: Deploy to Production Server
-        if: ${{ steps.approval.outputs.approved == 'true' }}
+        if: ${{ steps.approval.outputs.approved == 'Approved' }}
         run: |
           echo "Deploying to production server"
           ssh ubuntu@35.78.70.162 'set -e; docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer || true && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
