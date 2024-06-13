@@ -1,16 +1,15 @@
 name: PR CI/CD
-
 on:
   pull_request:
+    branches:
+      - dev
     types:
       - closed
 
 jobs:
   build-test-deploy:
-    runs-on: ubuntu-latest
-
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
-
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout source code 
         uses: actions/checkout@v3
