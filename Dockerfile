@@ -16,7 +16,7 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Use nginx image to serve static files
+# Use nginx image to serve static files and its 
 FROM nginx:alpine
 
 # Copy build output from builder stage to nginx  html directory
