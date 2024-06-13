@@ -7,7 +7,7 @@ on:
       - closed
 
 jobs:
-  build-test-deploy:
+  build-test:
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
     runs-on: ubuntu-latest
     steps:
@@ -37,26 +37,4 @@ jobs:
       - name: Deploy to Development Server
         run: |
           echo "Deploying to development server"
-          ssh ubuntu@35.78.70.162 'set -e; docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer || true && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
-
-      - name: Manual Approval for Production Deployment
-        id: approval
-        uses: trstringer/manual-approval@v1
-        with: 
-          secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: Sanoj-sudo
-          minimum-approvals: 1
-          issue-title: "Deploying to production server"
-          issue-body: "Please approve or deny the deployment to the production server."
-          exclude-workflow-initiator-as-approver: false
-
-      - name: Debug Outputs
-        if: always()
-        run: |
-          echo "Approved: ${{ steps.approval.outputs.approved }}"
-
-      - name: Deploy to Production Server
-        if: ${{ steps.approval.outputs.approved == 'Approved' }}
-        run: |
-          echo "Deploying to production server"
           ssh ubuntu@35.78.70.162 'set -e; docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer || true && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
