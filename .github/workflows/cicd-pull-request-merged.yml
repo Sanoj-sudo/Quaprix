@@ -33,12 +33,12 @@ jobs:
           ssh-private-key: ${{ secrets.EC2_KEY }}
 
       - name: Add server to known hosts server
-        run: ssh-keyscan -H 43.206.123.33 >> ~/.ssh/known_hosts
+        run: ssh-keyscan -H 35.78.70.162 >> ~/.ssh/known_hosts
 
       - name: Deploy to Development Server
         run: |
           echo "Deploying to development server"
-          ssh ubuntu@43.206.123.33 'set -e; docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer || true && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
+          ssh ubuntu@35.78.70.162 'set -e; docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer || true && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
 
       - name: Manual Approval for Production Deployment
         id: approval
@@ -55,4 +55,4 @@ jobs:
         if: ${{ steps.approval.outputs.approved == 'true' }}
         run: |
           echo "Deploying to production server"
-          ssh ubuntu@18.181.187.216 'set -e; docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer || true && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
+          ssh ubuntu@35.78.70.162 'set -e; docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer || true && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
