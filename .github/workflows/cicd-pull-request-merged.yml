@@ -1,14 +1,11 @@
 name: Merged Request CI/CD
 on:
-  pull_request:
+  push:
     branches:
-      - dev
-    types:
-      - closed
-
+      - main
 jobs:
   build-test:
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code 
