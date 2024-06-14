@@ -1,16 +1,12 @@
-name: PR CI/CD
-
+name: Merged Request CI/CD
 on:
-  pull_request:
-    types: 
-      - opened
+  push:
     branches:
       - main
-
 jobs:
-  build-test-deploy:
-    runs-on: ubuntu-latest
+  build-test:
 
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout source code 
         uses: actions/checkout@v3
@@ -22,11 +18,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker Image
-        if: ${{ success() }}
         run: docker build -t sanoj8860/reactjs-app:${{ github.sha }} .
 
       - name: Publish Docker Image to Docker Hub
-        if: ${{ success() }}
         run: docker push sanoj8860/reactjs-app:${{ github.sha }}
 
       - name: Add SSH key to the agent
@@ -37,9 +31,7 @@ jobs:
       - name: Add server to known hosts server
         run: ssh-keyscan -H 35.78.70.162 >> ~/.ssh/known_hosts
 
-      - name: Deploy
-        if: ${{ success() }}
+      - name: Deploy to Development Server
         run: |
           echo "Deploying to development server"
-          ssh ubuntu@35.78.70.162 'docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'
-      
+          ssh ubuntu@35.78.70.162 'set -e; docker pull sanoj8860/reactjs-app:${{ github.sha }} && docker rm -f reactContainer || true && docker run -d -p 80:80 --name reactContainer sanoj8860/reactjs-app:${{ github.sha }}'

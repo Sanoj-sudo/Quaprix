@@ -10,16 +10,16 @@ COPY package.json package-lock.json ./
 # Install dependencies
 RUN npm install
 
-# Copy rest of the application code
+# Copy rest of the application code to destination folder
 COPY . .
 
 # Build the application
 RUN npm run build
 
-# Use nginx image to serve static files
+# Use nginx image to serve static files and its 
 FROM nginx:alpine
 
-# Copy build output from builder stage to nginx html directory
+# Copy build output from builder stage to nginx  html directory
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy custom nginx configuration
